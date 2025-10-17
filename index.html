@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ping Pong Masters</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+            color: #f1f5f9;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Menu Styles */
+        .menu {
+            text-align: center;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .menu h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #06b6d4, #3b82f6, #8b5cf6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .menu-subtitle {
+            font-size: 1.2rem;
+            color: #cbd5e1;
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+
+        .menu-section {
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .menu-section h3 {
+            font-size: 1.1rem;
+            color: #e2e8f0;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .menu-btn {
+            background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%);
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .menu-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .menu-btn.secondary {
+            background: linear-gradient(135deg, #475569 0%, #334155 100%);
+        }
+
+        .menu-btn.secondary:hover {
+            box-shadow: 0 10px 25px rgba(71, 85, 105, 0.4);
+        }
+
+        .controls-info {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(30, 41, 59, 0.3);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: left;
+        }
+
+        .controls-info h3 {
+            font-size: 1.1rem;
+            color: #e2e8f0;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .control-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .control-icon {
+            font-size: 1.5rem;
+            width: 2rem;
+            text-align: center;
+        }
+
+        .control-text {
+            flex: 1;
+            font-size: 0.85rem;
+            line-height: 1.3;
+        }
+
+        .control-text strong {
+            color: #06b6d4;
+            font-weight: 600;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            font-weight: 400;
+        }
+
+        .input-group input, 
+        .input-group select {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f1f5f9;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .mode-btn {
+            flex: 1;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        /* Game Styles */
+        .game-screen {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .game-canvas-container {
+            position: relative;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: 15px;
+            padding: 1rem;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        #gameCanvas {
+            background: #0a0f1c;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .game-hud {
+            position: absolute;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 2rem;
+            background: rgba(15, 23, 42, 0.9);
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .score {
+            text-align: center;
+            color: #f1f5f9;
+        }
+
+        .score h3 {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            margin-bottom: 0.25rem;
+        }
+
+        .score .score-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #06b6d4;
+        }
+
+        .game-controls {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .control-btn {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            color: #3b82f6;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: #3b82f6;
+        }
+
+        /* Mobile Controls */
+        .mobile-controls {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 4rem;
+            opacity: 0.8;
+        }
+
+        .touch-area {
+            width: 120px;
+            height: 120px;
+            background: rgba(59, 130, 246, 0.2);
+            border: 2px solid rgba(59, 130, 246, 0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3b82f6;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: center;
+            user-select: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .touch-area:active {
+            background: rgba(59, 130, 246, 0.4);
+            transform: scale(0.95);
+        }
+
+        /* Leaderboard Styles */
+        .leaderboard {
+            max-width: 600px;
+            width: 90%;
+            backdrop-filter: blur(20px);
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            padding: 2rem;
+        }
+
+        .leaderboard h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #06b6d4, #3b82f6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .leaderboard-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(30, 41, 59, 0.4);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .rank {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #06b6d4;
+            width: 3rem;
+        }
+
+        .player-info {
+            flex: 1;
+            margin-left: 1rem;
+        }
+
+        .player-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .player-stats {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        .streak-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        /* Game Over Modal */
+        .game-over-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .game-over-content {
+            background: rgba(15, 23, 42, 0.95);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            backdrop-filter: blur(20px);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .game-over-content h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #06b6d4, #3b82f6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .visible {
+            display: flex !important;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .menu {
+                padding: 1.5rem;
+                max-width: 90vw;
+                margin: 1rem;
+            }
+            
+            .menu h1 {
+                font-size: 2.5rem;
+            }
+            
+            .controls-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+            
+            .control-item {
+                padding: 0.5rem;
+            }
+            
+            .control-text {
+                font-size: 0.8rem;
+            }
+            
+            .game-canvas-container {
+                width: auto !important;
+                height: auto !important;
+                max-width: 90vw;
+                padding: 0.5rem;
+            }
+            
+            .mobile-controls {
+                display: flex !important;
+                gap: 2rem;
+                bottom: 1rem;
+            }
+            
+            .touch-area {
+                width: 80px;
+                height: 80px;
+                font-size: 0.7rem;
+            }
+
+            .mode-selector {
+                flex-direction: column;
+            }
+            
+            .game-hud {
+                top: 0.5rem;
+                padding: 0.5rem 1rem;
+                gap: 1rem;
+            }
+            
+            .score .score-value {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .menu h1 {
+                font-size: 2rem;
+            }
+            
+            .mobile-controls {
+                gap: 1rem;
+                bottom: 0.5rem;
+            }
+            
+            .touch-area {
+                width: 70px;
+                height: 70px;
+                font-size: 0.6rem;
+            }
+            
+            .game-controls {
+                bottom: 0.5rem;
+                gap: 0.5rem;
+            }
+            
+            .control-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Landscape mobile optimization */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .menu {
+                padding: 1rem;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+            
+            .menu h1 {
+                font-size: 2rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .menu-subtitle {
+                font-size: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .menu-section {
+                margin-bottom: 1rem;
+            }
+            
+            .game-hud {
+                top: 0.25rem;
+                padding: 0.25rem 1rem;
+            }
+            
+            .mobile-controls {
+                bottom: 0.25rem;
+            }
+            
+            .game-controls {
+                bottom: 0.25rem;
+            }
+        }
+
+        /* Tablet optimization */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .menu {
+                max-width: 500px;
+            }
+            
+            .game-canvas-container {
+                max-width: 80vw;
+            }
+            
+            .leaderboard {
+                max-width: 600px;
+            }
+        }
+
+        /* Large screen optimization */
+        @media (min-width: 1920px) {
+            .menu h1 {
+                font-size: 4rem;
+            }
+            
+            .game-canvas-container {
+                max-width: 60vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Menu -->
+        <div id="menu" class="menu">
+            <h1>PING PONG</h1>
+            <p class="menu-subtitle">Masters Tournament</p>
+            
+            <div class="menu-section">
+                <h3>Modo de Jogo</h3>
+                <div class="mode-selector">
+                    <button class="mode-btn active" onclick="selectMode('single_player')">vs Bot</button>
+                    <button class="mode-btn" onclick="selectMode('multiplayer')">2 Jogadores</button>
+                </div>
+            </div>
+
+            <div class="menu-section">
+                <h3>Jogadores</h3>
+                <div class="input-group">
+                    <label>Nome do Jogador 1</label>
+                    <input type="text" id="player1Name" value="Jogador 1" placeholder="Digite o nome do jogador 1">
+                </div>
+                
+                <div class="input-group" id="player2Group" style="display: none;">
+                    <label>Nome do Jogador 2</label>
+                    <input type="text" id="player2Name" value="Jogador 2" placeholder="Digite o nome do jogador 2">
+                </div>
+                
+                <div class="input-group" id="botDifficultyGroup">
+                    <label>Dificuldade do Bot</label>
+                    <select id="botDifficulty">
+                        <option value="easy">Fácil - Bot básico e previsível</option>
+                        <option value="medium" selected>Médio - Bot inteligente com adaptação</option>
+                        <option value="hard">Difícil - Bot profissional e agressivo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="menu-buttons">
+                <button class="menu-btn" onclick="startGame()">Iniciar Jogo</button>
+                <button class="menu-btn secondary" onclick="showLeaderboard()">Ver Ranking</button>
+            </div>
+            
+            <!-- Controles Section -->
+            <div class="controls-info">
+                <h3>Controles</h3>
+                <div class="controls-grid">
+                    <div class="control-item">
+                        <div class="control-icon">⌨️</div>
+                        <div class="control-text">
+                            <strong>Teclado</strong><br>
+                            Jogador 1: W/S ou ↑/↓<br>
+                            <span id="player2Controls">Jogador 2: I/K</span>
+                        </div>
+                    </div>
+                    <div class="control-item">
+                        <div class="control-icon">📱</div>
+                        <div class="control-text">
+                            <strong>Touch/Mobile</strong><br>
+                            Arraste as raquetes<br>
+                            ou use botões virtuais
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" class="game-screen hidden">
+            <div class="game-hud">
+                <div class="score">
+                    <h3 id="player1Label">Jogador 1</h3>
+                    <div class="score-value" id="player1Score">0</div>
+                </div>
+                <div class="score">
+                    <h3 id="player2Label">Bot</h3>
+                    <div class="score-value" id="player2Score">0</div>
+                </div>
+            </div>
+
+            <div class="game-canvas-container">
+                <canvas id="gameCanvas" width="800" height="400"></canvas>
+            </div>
+
+            <div class="game-controls">
+                <button class="control-btn" onclick="pauseGame()">Pausar</button>
+                <button class="control-btn" onclick="restartGame()">Reiniciar</button>
+                <button class="control-btn" onclick="backToMenu()">Voltar ao Menu</button>
+            </div>
+
+            <!-- Mobile Controls -->
+            <div class="mobile-controls">
+                <div class="player-controls">
+                    <div class="touch-area" onmousedown="handleTouch(1, 'up', true)" onmouseup="handleTouch(1, 'up', false)" ontouchstart="handleTouch(1, 'up', true)" ontouchend="handleTouch(1, 'up', false)">
+                        Jogador 1<br>CIMA
+                    </div>
+                    <div class="touch-area" onmousedown="handleTouch(1, 'down', true)" onmouseup="handleTouch(1, 'down', false)" ontouchstart="handleTouch(1, 'down', true)" ontouchend="handleTouch(1, 'down', false)">
+                        Jogador 1<br>BAIXO
+                    </div>
+                </div>
+                <div class="player-controls" id="player2Controls" style="display: none;">
+                    <div class="touch-area" onmousedown="handleTouch(2, 'up', true)" onmouseup="handleTouch(2, 'up', false)" ontouchstart="handleTouch(2, 'up', true)" ontouchend="handleTouch(2, 'up', false)">
+                        Jogador 2<br>CIMA
+                    </div>
+                    <div class="touch-area" onmousedown="handleTouch(2, 'down', true)" onmouseup="handleTouch(2, 'down', false)" ontouchstart="handleTouch(2, 'down', true)" ontouchend="handleTouch(2, 'down', false)">
+                        Jogador 2<br>BAIXO
+                    </div>
+                </div>
+            </div>
+
+            <div style="position: absolute; bottom: 0.5rem; left: 50%; transform: translateX(-50%); font-size: 0.8rem; color: #64748b; text-align: center;">
+                <span id="gameInstructions">Jogador 1: W/S ou ↑/↓ | Jogador 2: I/K</span>
+            </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <div id="leaderboard" class="leaderboard hidden">
+            <h2>Ranking</h2>
+            <div class="leaderboard-list" id="leaderboardList">
+                <!-- Leaderboard items will be inserted here -->
+            </div>
+            <div style="margin-top: 2rem; text-align: center;">
+                <button class="menu-btn secondary" onclick="backToMenu()">Voltar ao Menu</button>
+            </div>
+        </div>
+
+        <!-- Game Over Modal -->
+        <div id="gameOverModal" class="game-over-modal">
+            <div class="game-over-content">
+                <h2>Fim de Jogo!</h2>
+                <p id="gameOverText">Vencedor: Jogador 1</p>
+                <div class="menu-buttons">
+                    <button class="menu-btn" onclick="restartGame()">Jogar Novamente</button>
+                    <button class="menu-btn secondary" onclick="backToMenu()">Voltar ao Menu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game variables
+        let canvas, ctx;
+        let gameState = 'menu'; // menu, playing, paused, game_over
+        let currentMode = 'single_player';
+        let gameSettings = {
+            player1Name: 'Jogador 1',
+            player2Name: 'Jogador 2',
+            botDifficulty: 'medium'
+        };
+
+        // Game objects
+        let paddle1, paddle2, ball;
+        let scores = { player1: 0, player2: 0 };
+        let keys = {};
+        let gameStartTime;
+        let animationId;
+
+        // Touch/drag variables
+        let isDragging = false;
+        let dragPaddle = null;
+        let touchStartY = 0;
+        let touchStartPaddleY = 0;
+
+        // Bot adaptive variables
+        let rallyCounts = 0;
+        let adaptiveDifficultyMultiplier = 1.0;
+
+        // Game configuration
+        const config = {
+            winningScore: 5,
+            paddle: { width: 12, height: 80, speed: 6 },
+            ball: { size: 12, initialSpeed: 4, maxSpeed: 8 }
+        };
+
+        // Bot settings - Increased difficulty
+        const botSettings = {
+            easy: { speed: 1.0, accuracy: 0.7, reactionDelay: 250 },      // Was: speed: 0.8, accuracy: 0.6, delay: 300
+            medium: { speed: 1.3, accuracy: 0.85, reactionDelay: 150 },   // Was: speed: 1.0, accuracy: 0.8, delay: 200  
+            hard: { speed: 1.6, accuracy: 0.95, reactionDelay: 80 }       // Was: speed: 1.2, accuracy: 0.95, delay: 100
+        };
+
+        let lastBotMove = 0;
+        let botTarget = 0;
+
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', function() {
+            canvas = document.getElementById('gameCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // Make canvas responsive
+            resizeCanvas();
+            window.addEventListener('resize', () => {
+                setTimeout(resizeCanvas, 100); // Debounce resize
+            });
+            
+            // Handle orientation changes on mobile
+            window.addEventListener('orientationchange', () => {
+                setTimeout(() => {
+                    resizeCanvas();
+                    if (gameState === 'playing') {
+                        initGame(); // Reinitialize game objects with new dimensions
+                    }
+                }, 300);
+            });
+
+            // Keyboard events
+            document.addEventListener('keydown', (e) => {
+                keys[e.key.toLowerCase()] = true;
+                keys[e.key] = true;
+                // Prevent default for game keys to avoid scrolling
+                if (['w', 's', 'i', 'k', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+                    e.preventDefault();
+                }
+            });
+            document.addEventListener('keyup', (e) => {
+                keys[e.key.toLowerCase()] = false;
+                keys[e.key] = false;
+            });
+
+            // Load saved data and update daily stats
+            updateDailyStats();
+
+            // Prevent context menu on touch devices
+            document.addEventListener('contextmenu', e => e.preventDefault());
+            
+            // Prevent zoom on double tap for iOS
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', function (event) {
+                const now = (new Date()).getTime();
+                if (now - lastTouchEnd <= 300) {
+                    event.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, false);
+
+            // Add touch/mouse events for paddle dragging
+            canvas.addEventListener('mousedown', handleDragStart);
+            canvas.addEventListener('mousemove', handleDragMove);
+            canvas.addEventListener('mouseup', handleDragEnd);
+            canvas.addEventListener('touchstart', handleDragStart, { passive: false });
+            canvas.addEventListener('touchmove', handleDragMove, { passive: false });
+            canvas.addEventListener('touchend', handleDragEnd);
+        });
+        
+        function handleDragStart(event) {
+            if (gameState !== 'playing') return;
+            
+            event.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const clientX = event.touches ? event.touches[0].clientX : event.clientX;
+            const clientY = event.touches ? event.touches[0].clientY : event.clientY;
+            const x = clientX - rect.left;
+            const y = clientY - rect.top;
+            
+            // Check if touch/click is on paddle1
+            if (x >= paddle1.x && x <= paddle1.x + paddle1.width &&
+                y >= paddle1.y && y <= paddle1.y + paddle1.height) {
+                isDragging = true;
+                dragPaddle = 'paddle1';
+                touchStartY = y;
+                touchStartPaddleY = paddle1.y;
+                canvas.style.cursor = 'grabbing';
+                return;
+            }
+            
+            // Check if touch/click is on paddle2 (only in multiplayer mode)
+            if (currentMode === 'multiplayer' && 
+                x >= paddle2.x && x <= paddle2.x + paddle2.width &&
+                y >= paddle2.y && y <= paddle2.y + paddle2.height) {
+                isDragging = true;
+                dragPaddle = 'paddle2';
+                touchStartY = y;
+                touchStartPaddleY = paddle2.y;
+                canvas.style.cursor = 'grabbing';
+                return;
+            }
+        }
+        
+        function handleDragMove(event) {
+            if (!isDragging || !dragPaddle) return;
+            
+            event.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const clientY = event.touches ? event.touches[0].clientY : event.clientY;
+            const y = clientY - rect.top;
+            
+            const deltaY = y - touchStartY;
+            const newY = touchStartPaddleY + deltaY;
+            
+            if (dragPaddle === 'paddle1') {
+                paddle1.y = Math.max(0, Math.min(canvas.height - paddle1.height, newY));
+            } else if (dragPaddle === 'paddle2') {
+                paddle2.y = Math.max(0, Math.min(canvas.height - paddle2.height, newY));
+            }
+        }
+        
+        function handleDragEnd(event) {
+            if (isDragging) {
+                isDragging = false;
+                dragPaddle = null;
+                canvas.style.cursor = 'default';
+            }
+        }
+        
+        function updateDailyStats() {
+            const players = loadLeaderboard();
+            const today = new Date().toDateString();
+            let updated = false;
+            
+            Object.values(players).forEach(player => {
+                if (!player.lastRankDate) {
+                    player.lastRankDate = today;
+                    player.daysAtCurrentRank = 0;
+                    updated = true;
+                }
+            });
+            
+            if (updated) {
+                localStorage.setItem('pingpong_players', JSON.stringify(players));
+            }
+        }
+
+        function resizeCanvas() {
+            const container = document.querySelector('.game-canvas-container');
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const isLandscape = viewportWidth > viewportHeight;
+            const isMobile = viewportWidth <= 768;
+            const isTablet = viewportWidth <= 1024 && viewportWidth > 768;
+            
+            let canvasWidth, canvasHeight;
+            
+            if (isMobile) {
+                if (isLandscape) {
+                    // Mobile landscape - use more of the screen
+                    canvasWidth = Math.min(viewportWidth * 0.85, 600);
+                    canvasHeight = Math.min(viewportHeight * 0.5, canvasWidth * 0.6);
+                } else {
+                    // Mobile portrait - smaller canvas
+                    canvasWidth = Math.min(viewportWidth * 0.9, 350);
+                    canvasHeight = canvasWidth * 0.6;
+                }
+            } else if (isTablet) {
+                // Tablet - medium size
+                canvasWidth = Math.min(viewportWidth * 0.8, 700);
+                canvasHeight = canvasWidth * 0.5;
+            } else {
+                // Desktop - full size but responsive
+                canvasWidth = Math.min(viewportWidth * 0.7, 800);
+                canvasHeight = Math.min(viewportHeight * 0.6, 400);
+            }
+            
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+            
+            // Update CSS to center the canvas properly
+            const gameContainer = document.querySelector('.game-canvas-container');
+            if (gameContainer) {
+                gameContainer.style.width = canvasWidth + 'px';
+                gameContainer.style.height = canvasHeight + 'px';
+            }
+        }
+
+        // Menu functions
+        function selectMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const player2Group = document.getElementById('player2Group');
+            const botDifficultyGroup = document.getElementById('botDifficultyGroup');
+            const player2ControlsText = document.getElementById('player2Controls');
+            
+            if (mode === 'multiplayer') {
+                player2Group.style.display = 'block';
+                botDifficultyGroup.style.display = 'none';
+                player2ControlsText.style.display = 'block';
+                player2ControlsText.textContent = 'Jogador 2: I/K';
+            } else {
+                player2Group.style.display = 'none';
+                botDifficultyGroup.style.display = 'block';
+                player2ControlsText.style.display = 'none';
+            }
+        }
+
+        function startGame() {
+            gameSettings.player1Name = document.getElementById('player1Name').value || 'Jogador 1';
+            gameSettings.player2Name = document.getElementById('player2Name').value || 'Jogador 2';
+            gameSettings.botDifficulty = document.getElementById('botDifficulty').value;
+            
+            // Update UI labels
+            document.getElementById('player1Label').textContent = gameSettings.player1Name;
+            document.getElementById('player2Label').textContent = currentMode === 'multiplayer' ? gameSettings.player2Name : 'Bot';
+            
+            // Show mobile controls for multiplayer
+            const player2Controls = document.getElementById('player2Controls');
+            const isMobileDevice = window.innerWidth <= 768 || 'ontouchstart' in window;
+            
+            if (currentMode === 'multiplayer' && isMobileDevice) {
+                player2Controls.style.display = 'block';
+            } else {
+                player2Controls.style.display = 'none';
+            }
+            
+            // Update mobile controls visibility
+            const mobileControls = document.querySelector('.mobile-controls');
+            if (isMobileDevice) {
+                mobileControls.style.display = 'flex';
+                // Update touch area labels
+                const touchAreas = mobileControls.querySelectorAll('.touch-area');
+                touchAreas[0].innerHTML = `${gameSettings.player1Name}<br>CIMA`;
+                touchAreas[1].innerHTML = `${gameSettings.player1Name}<br>BAIXO`;
+                if (currentMode === 'multiplayer' && touchAreas.length >= 4) {
+                    touchAreas[2].innerHTML = `${gameSettings.player2Name}<br>CIMA`;
+                    touchAreas[3].innerHTML = `${gameSettings.player2Name}<br>BAIXO`;
+                }
+            }
+            
+            // Update instructions
+            const instructions = currentMode === 'multiplayer' 
+                ? 'Jogador 1: W/S ou ↑/↓ | Jogador 2: I/K'
+                : 'Jogador 1: W/S ou ↑/↓';
+            document.getElementById('gameInstructions').textContent = instructions;
+            
+            showScreen('gameScreen');
+            initGame();
+            gameLoop();
+        }
+
+        function initGame() {
+            resizeCanvas();
+            const scaleX = canvas.width / 800;
+            const scaleY = canvas.height / 400;
+            
+            paddle1 = {
+                x: 40 * scaleX, // Moved closer to center (was 20)
+                y: canvas.height / 2 - (config.paddle.height * scaleY) / 2,
+                width: config.paddle.width * scaleX,
+                height: config.paddle.height * scaleY,
+                dy: 0
+            };
+
+            paddle2 = {
+                x: canvas.width - (40 + config.paddle.width) * scaleX, // Moved closer to center (was 20)
+                y: canvas.height / 2 - (config.paddle.height * scaleY) / 2,
+                width: config.paddle.width * scaleX,
+                height: config.paddle.height * scaleY,
+                dy: 0
+            };
+
+            ball = {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                dx: (Math.random() > 0.5 ? 1 : -1) * config.ball.initialSpeed * scaleX,
+                dy: (Math.random() - 0.5) * config.ball.initialSpeed * scaleY,
+                size: config.ball.size * Math.min(scaleX, scaleY)
+            };
+
+            scores = { player1: 0, player2: 0 };
+            updateScoreDisplay();
+            gameState = 'playing';
+            gameStartTime = Date.now();
+            lastBotMove = 0;
+            botTarget = canvas.height / 2;
+            
+            // Reset adaptive difficulty system
+            rallyCounts = 0;
+            adaptiveDifficultyMultiplier = 1.0;
+        }
+
+        function gameLoop() {
+            if (gameState !== 'playing') return;
+
+            update();
+            render();
+            animationId = requestAnimationFrame(gameLoop);
+        }
+
+        function update() {
+            const scaleX = canvas.width / 800;
+            const scaleY = canvas.height / 400;
+
+            // Update paddle1 (player 1)
+            paddle1.dy = 0;
+            if (keys['arrowup'] || keys['w']) {
+                paddle1.dy = -config.paddle.speed * scaleY;
+            }
+            if (keys['arrowdown'] || keys['s']) {
+                paddle1.dy = config.paddle.speed * scaleY;
+            }
+            paddle1.y += paddle1.dy;
+            paddle1.y = Math.max(0, Math.min(canvas.height - paddle1.height, paddle1.y));
+
+            // Update paddle2 (player 2 or bot)
+            if (currentMode === 'multiplayer') {
+                paddle2.dy = 0;
+                if (keys['i']) {
+                    paddle2.dy = -config.paddle.speed * scaleY;
+                }
+                if (keys['k']) {
+                    paddle2.dy = config.paddle.speed * scaleY;
+                }
+            } else {
+                // Enhanced Bot AI
+                const botConfig = botSettings[gameSettings.botDifficulty];
+                const now = Date.now();
+                
+                if (now - lastBotMove > botConfig.reactionDelay) {
+                    const ballCenterY = ball.y;
+                    const paddleCenterY = paddle2.y + paddle2.height / 2;
+                    const ballDirection = ball.dx > 0 ? 'approaching' : 'moving_away';
+                    
+                    let targetY;
+                    
+                    // Enhanced AI strategy based on difficulty
+                    if (gameSettings.botDifficulty === 'hard') {
+                        // Hard: Predictive AI - aims where ball will be
+                        const timeToReachPaddle = Math.abs((paddle2.x - ball.x) / ball.dx);
+                        const predictedBallY = ball.y + (ball.dy * timeToReachPaddle);
+                        targetY = Math.max(paddle2.height/2, Math.min(canvas.height - paddle2.height/2, predictedBallY));
+                        
+                        // Add slight strategic positioning
+                        if (ballDirection === 'moving_away') {
+                            targetY = canvas.height / 2; // Return to center when ball is away
+                        }
+                    } else if (gameSettings.botDifficulty === 'medium') {
+                        // Medium: Reactive with some prediction
+                        if (ballDirection === 'approaching') {
+                            const timeToReachPaddle = Math.abs((paddle2.x - ball.x) / ball.dx);
+                            const predictedBallY = ball.y + (ball.dy * timeToReachPaddle * 0.7); // 70% prediction
+                            targetY = predictedBallY;
+                        } else {
+                            targetY = ballCenterY; // Just follow ball when it's moving away
+                        }
+                    } else {
+                        // Easy: Basic following with some lag
+                        targetY = ballCenterY;
+                    }
+                    
+                    // Add accuracy-based randomness
+                    const accuracy = botConfig.accuracy;
+                    const maxError = (1 - accuracy) * paddle2.height;
+                    const randomError = (Math.random() - 0.5) * 2 * maxError;
+                    botTarget = targetY + randomError;
+                    
+                    // Keep target within bounds
+                    botTarget = Math.max(paddle2.height/2, Math.min(canvas.height - paddle2.height/2, botTarget));
+                    
+                    lastBotMove = now;
+                }
+                
+                // Enhanced movement with variable speed based on urgency and adaptive difficulty
+                const targetDiff = botTarget - (paddle2.y + paddle2.height / 2);
+                const urgency = Math.abs(ball.dx) > config.ball.initialSpeed * 1.5 ? 1.2 : 1.0; // Move faster for fast balls
+                
+                if (Math.abs(targetDiff) > 3) {
+                    const moveSpeed = config.paddle.speed * scaleY * botConfig.speed * urgency * adaptiveDifficultyMultiplier;
+                    paddle2.dy = targetDiff > 0 ? moveSpeed : -moveSpeed;
+                } else {
+                    paddle2.dy = 0;
+                }
+            }
+
+            paddle2.y += paddle2.dy;
+            paddle2.y = Math.max(0, Math.min(canvas.height - paddle2.height, paddle2.y));
+
+            // Update ball
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+
+            // Ball collision with walls
+            if (ball.y - ball.size <= 0 || ball.y + ball.size >= canvas.height) {
+                ball.dy = -ball.dy;
+                // Keep ball inside bounds
+                if (ball.y - ball.size <= 0) {
+                    ball.y = ball.size;
+                }
+                if (ball.y + ball.size >= canvas.height) {
+                    ball.y = canvas.height - ball.size;
+                }
+            }
+
+            // Ball collision with paddles
+            // Left paddle (paddle1) collision
+            if (ball.x - ball.size <= paddle1.x + paddle1.width &&
+                ball.x + ball.size >= paddle1.x &&
+                ball.y + ball.size >= paddle1.y &&
+                ball.y - ball.size <= paddle1.y + paddle1.height &&
+                ball.dx < 0) {
+                ball.dx = -ball.dx * 1.05;
+                ball.dx = Math.min(Math.abs(ball.dx), config.ball.maxSpeed * scaleX);
+                const hitPos = (ball.y - (paddle1.y + paddle1.height / 2)) / (paddle1.height / 2);
+                ball.dy += hitPos * 2 * scaleY;
+                // Keep ball from getting stuck
+                ball.x = paddle1.x + paddle1.width + ball.size;
+                
+                // Increase rally count for adaptive difficulty
+                if (currentMode === 'single_player') {
+                    rallyCounts++;
+                    updateAdaptiveDifficulty();
+                }
+            }
+
+            // Right paddle (paddle2) collision
+            if (ball.x + ball.size >= paddle2.x &&
+                ball.x - ball.size <= paddle2.x + paddle2.width &&
+                ball.y + ball.size >= paddle2.y &&
+                ball.y - ball.size <= paddle2.y + paddle2.height &&
+                ball.dx > 0) {
+                ball.dx = -ball.dx * 1.05;
+                ball.dx = Math.max(-Math.abs(ball.dx), -config.ball.maxSpeed * scaleX);
+                const hitPos = (ball.y - (paddle2.y + paddle2.height / 2)) / (paddle2.height / 2);
+                ball.dy += hitPos * 2 * scaleY;
+                // Keep ball from getting stuck
+                ball.x = paddle2.x - ball.size;
+                
+                // Increase rally count for adaptive difficulty
+                if (currentMode === 'single_player') {
+                    rallyCounts++;
+                    updateAdaptiveDifficulty();
+                }
+            }
+
+            // Scoring
+            if (ball.x < 0) {
+                scores.player2++;
+                resetBall();
+                updateScoreDisplay();
+                if (scores.player2 >= config.winningScore) {
+                    endGame(currentMode === 'multiplayer' ? gameSettings.player2Name : 'Bot');
+                }
+            } else if (ball.x > canvas.width) {
+                scores.player1++;
+                resetBall();
+                updateScoreDisplay();
+                if (scores.player1 >= config.winningScore) {
+                    endGame(gameSettings.player1Name);
+                }
+            }
+        }
+
+        function updateAdaptiveDifficulty() {
+            // Increase bot performance during long rallies
+            if (rallyCounts > 5) {
+                adaptiveDifficultyMultiplier = 1 + (rallyCounts - 5) * 0.05; // 5% increase per hit after 5th
+                adaptiveDifficultyMultiplier = Math.min(adaptiveDifficultyMultiplier, 1.5); // Cap at 50% increase
+            } else {
+                adaptiveDifficultyMultiplier = 1.0;
+            }
+        }
+
+        function resetBall() {
+            const scaleX = canvas.width / 800;
+            const scaleY = canvas.height / 400;
+            
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 2;
+            ball.dx = (Math.random() > 0.5 ? 1 : -1) * config.ball.initialSpeed * scaleX;
+            ball.dy = (Math.random() - 0.5) * config.ball.initialSpeed * scaleY;
+            
+            // Ensure minimum speed for dy
+            if (Math.abs(ball.dy) < scaleY) {
+                ball.dy = ball.dy > 0 ? scaleY : -scaleY;
+            }
+            
+            // Reset adaptive difficulty on new point
+            rallyCounts = 0;
+            adaptiveDifficultyMultiplier = 1.0;
+        }
+
+        function render() {
+            // Clear canvas
+            ctx.fillStyle = '#0a0f1c';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw center line
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = 'rgba(59, 130, 246, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Draw paddles with interactive indication
+            const isMobileDevice = window.innerWidth <= 768 || 'ontouchstart' in window;
+            
+            // Left paddle (always interactive)
+            if (isMobileDevice) {
+                ctx.shadowBlur = dragPaddle === 'paddle1' ? 15 : 10;
+                ctx.shadowColor = dragPaddle === 'paddle1' ? '#10b981' : '#06b6d4';
+            } else {
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#06b6d4';
+            }
+            ctx.fillStyle = dragPaddle === 'paddle1' ? '#10b981' : '#06b6d4';
+            ctx.fillRect(paddle1.x, paddle1.y, paddle1.width, paddle1.height);
+            
+            // Add touch indicator for paddle1
+            if (isMobileDevice && gameState === 'playing') {
+                ctx.shadowBlur = 5;
+                ctx.shadowColor = '#06b6d4';
+                ctx.strokeStyle = 'rgba(6, 182, 212, 0.5)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(paddle1.x - 2, paddle1.y - 2, paddle1.width + 4, paddle1.height + 4);
+            }
+            
+            // Right paddle (interactive only in multiplayer)
+            const paddle2Interactive = currentMode === 'multiplayer' && isMobileDevice;
+            if (paddle2Interactive) {
+                ctx.shadowBlur = dragPaddle === 'paddle2' ? 15 : 10;
+                ctx.shadowColor = dragPaddle === 'paddle2' ? '#10b981' : '#06b6d4';
+                ctx.fillStyle = dragPaddle === 'paddle2' ? '#10b981' : '#06b6d4';
+                
+                // Add touch indicator for paddle2
+                ctx.strokeStyle = 'rgba(6, 182, 212, 0.5)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(paddle2.x - 2, paddle2.y - 2, paddle2.width + 4, paddle2.height + 4);
+            } else {
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#06b6d4';
+                ctx.fillStyle = '#06b6d4';
+            }
+            ctx.fillRect(paddle2.x, paddle2.y, paddle2.width, paddle2.height);
+            
+            ctx.shadowBlur = 0;
+
+            // Draw ball with stronger glow
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = '#06b6d4';
+            ctx.fillStyle = '#f1f5f9';
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            // Draw drag hint text (only on first few seconds) and adaptive difficulty indicator
+            if (isMobileDevice && gameState === 'playing') {
+                const gameTime = (Date.now() - gameStartTime) / 1000;
+                if (gameTime < 3) {
+                    ctx.fillStyle = 'rgba(203, 213, 225, 0.8)';
+                    ctx.font = `${12 * Math.min(canvas.width / 800, canvas.height / 400)}px Space Grotesk`;
+                    ctx.textAlign = 'center';
+                    ctx.fillText('Arraste as raquetes para mover', canvas.width / 2, canvas.height - 20);
+                }
+            }
+            
+            // Show adaptive difficulty indicator for bot
+            if (currentMode === 'single_player' && adaptiveDifficultyMultiplier > 1.0) {
+                const intensity = Math.min((adaptiveDifficultyMultiplier - 1) * 2, 1); // 0 to 1
+                ctx.fillStyle = `rgba(239, 68, 68, ${0.3 + intensity * 0.4})`; // Red glow gets stronger
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = '#ef4444';
+                ctx.fillRect(paddle2.x, paddle2.y, paddle2.width, paddle2.height);
+                ctx.shadowBlur = 0;
+                
+                // Rally counter text
+                ctx.fillStyle = 'rgba(239, 68, 68, 0.9)';
+                ctx.font = `${10 * Math.min(canvas.width / 800, canvas.height / 400)}px Space Grotesk`;
+                ctx.textAlign = 'center';
+                const rallyText = `🔥 Rally: ${rallyCounts} hits`;
+                ctx.fillText(rallyText, canvas.width * 0.75, canvas.height * 0.15);
+            }
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('player1Score').textContent = scores.player1;
+            document.getElementById('player2Score').textContent = scores.player2;
+        }
+
+        function endGame(winner) {
+            gameState = 'game_over';
+            cancelAnimationFrame(animationId);
+            
+            // Save game result
+            const gameData = {
+                mode: currentMode,
+                player1Name: gameSettings.player1Name,
+                player2Name: currentMode === 'multiplayer' ? gameSettings.player2Name : null,
+                winner: winner,
+                player1Score: scores.player1,
+                player2Score: scores.player2,
+                botDifficulty: currentMode === 'single_player' ? gameSettings.botDifficulty : null,
+                duration: Math.floor((Date.now() - gameStartTime) / 1000)
+            };
+            
+            saveGameResult(gameData);
+            
+            // Show game over modal
+            document.getElementById('gameOverText').innerHTML = 
+                `🏆 ${winner} Venceu!<br/>Placar Final: ${scores.player1} - ${scores.player2}`;
+            document.getElementById('gameOverModal').style.display = 'flex';
+        }
+
+        // Game controls
+        function pauseGame() {
+            if (gameState === 'playing') {
+                gameState = 'paused';
+                cancelAnimationFrame(animationId);
+                event.target.textContent = 'Continuar';
+            } else if (gameState === 'paused') {
+                gameState = 'playing';
+                gameLoop();
+                event.target.textContent = 'Pausar';
+            }
+        }
+
+        function restartGame() {
+            cancelAnimationFrame(animationId);
+            document.getElementById('gameOverModal').style.display = 'none';
+            const pauseBtn = document.querySelector('.control-btn');
+            pauseBtn.textContent = 'Pausar';
+            initGame();
+            gameLoop();
+        }
+
+        function backToMenu() {
+            cancelAnimationFrame(animationId);
+            document.getElementById('gameOverModal').style.display = 'none';
+            const pauseBtn = document.querySelector('.control-btn');
+            pauseBtn.textContent = 'Pausar';
+            showScreen('menu');
+            gameState = 'menu';
+        }
+
+        // Touch controls
+        function handleTouch(player, direction, pressed) {
+            event.preventDefault();
+            const key = player === 1 ? (direction === 'up' ? 'w' : 's') : (direction === 'up' ? 'i' : 'k');
+            keys[key] = pressed;
+        }
+
+        // Screen management
+        function showScreen(screenId) {
+            document.querySelectorAll('.menu, .game-screen, .leaderboard').forEach(el => {
+                el.classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+        }
+
+        function showLeaderboard() {
+            showScreen('leaderboard');
+            displayLeaderboard();
+        }
+
+        // Local storage functions
+        function saveGameResult(gameData) {
+            let players = JSON.parse(localStorage.getItem('pingpong_players') || '{}');
+            let games = JSON.parse(localStorage.getItem('pingpong_games') || '[]');
+            
+            // Add timestamp to game data
+            gameData.timestamp = new Date().toISOString();
+            games.push(gameData);
+            
+            // Keep only last 100 games to prevent storage bloat
+            if (games.length > 100) {
+                games = games.slice(-100);
+            }
+            
+            localStorage.setItem('pingpong_games', JSON.stringify(games));
+            
+            // Update player stats
+            updatePlayerStats(players, gameData.player1Name, gameData.winner === gameData.player1Name);
+            if (gameData.player2Name) {
+                updatePlayerStats(players, gameData.player2Name, gameData.winner === gameData.player2Name);
+            }
+            
+            localStorage.setItem('pingpong_players', JSON.stringify(players));
+        }
+
+        function updatePlayerStats(players, playerName, won) {
+            const today = new Date().toDateString();
+            
+            if (!players[playerName]) {
+                players[playerName] = {
+                    name: playerName,
+                    consecutiveWins: 0,
+                    bestStreak: 0,
+                    totalGames: 0,
+                    totalWins: 0,
+                    lastRankDate: today,
+                    daysAtCurrentRank: 0
+                };
+            }
+            
+            const player = players[playerName];
+            const oldConsecutiveWins = player.consecutiveWins;
+            player.totalGames++;
+            
+            if (won) {
+                player.totalWins++;
+                player.consecutiveWins++;
+                if (player.consecutiveWins > player.bestStreak) {
+                    player.bestStreak = player.consecutiveWins;
+                }
+            } else {
+                player.consecutiveWins = 0;
+            }
+            
+            // Update ranking days logic
+            updateRankingDays(players, today);
+        }
+        
+        function updateRankingDays(players, today) {
+            // Get current ranking
+            const playerArray = Object.values(players);
+            const oldRanking = [...playerArray].sort((a, b) => {
+                if (b.consecutiveWins !== a.consecutiveWins) {
+                    return b.consecutiveWins - a.consecutiveWins;
+                }
+                return b.bestStreak - a.bestStreak;
+            });
+            
+            // Calculate days for each player
+            playerArray.forEach(player => {
+                if (!player.lastRankDate) {
+                    player.lastRankDate = today;
+                    player.daysAtCurrentRank = 0;
+                } else if (player.lastRankDate !== today) {
+                    // Calculate days difference
+                    const lastDate = new Date(player.lastRankDate);
+                    const currentDate = new Date(today);
+                    const timeDiff = currentDate.getTime() - lastDate.getTime();
+                    const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+                    
+                    player.daysAtCurrentRank = (player.daysAtCurrentRank || 0) + daysDiff;
+                    player.lastRankDate = today;
+                }
+            });
+            
+            // Get new ranking after game
+            const newRanking = [...playerArray].sort((a, b) => {
+                if (b.consecutiveWins !== a.consecutiveWins) {
+                    return b.consecutiveWins - a.consecutiveWins;
+                }
+                return b.bestStreak - a.bestStreak;
+            });
+            
+            // Check if ranking order changed
+            const rankingChanged = oldRanking.length !== newRanking.length || 
+                oldRanking.some((player, index) => 
+                    !newRanking[index] || player.name !== newRanking[index].name
+                );
+            
+            if (rankingChanged) {
+                // Reset days for players whose rank changed
+                newRanking.forEach((player, index) => {
+                    const oldIndex = oldRanking.findIndex(p => p.name === player.name);
+                    if (oldIndex !== index) {
+                        player.daysAtCurrentRank = 0;
+                        player.lastRankDate = today;
+                    }
+                });
+            }
+        }
+
+        function loadLeaderboard() {
+            return JSON.parse(localStorage.getItem('pingpong_players') || '{}');
+        }
+
+        function displayLeaderboard() {
+            const players = loadLeaderboard();
+            const playerArray = Object.values(players);
+            const today = new Date().toDateString();
+            
+            // Update days calculation for display
+            playerArray.forEach(player => {
+                if (player.lastRankDate && player.lastRankDate !== today) {
+                    const lastDate = new Date(player.lastRankDate);
+                    const currentDate = new Date(today);
+                    const timeDiff = currentDate.getTime() - lastDate.getTime();
+                    const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+                    player.daysAtCurrentRank = (player.daysAtCurrentRank || 0) + daysDiff;
+                }
+            });
+            
+            // Sort by consecutive wins, then by best streak
+            playerArray.sort((a, b) => {
+                if (b.consecutiveWins !== a.consecutiveWins) {
+                    return b.consecutiveWins - a.consecutiveWins;
+                }
+                return b.bestStreak - a.bestStreak;
+            });
+            
+            const leaderboardList = document.getElementById('leaderboardList');
+            
+            if (playerArray.length === 0) {
+                leaderboardList.innerHTML = `
+                    <div style="text-align: center; color: #cbd5e1; padding: 2rem; font-size: 1.1rem;">
+                        Nenhum jogador ainda. Seja o primeiro a jogar!
+                    </div>
+                `;
+                return;
+            }
+            
+            leaderboardList.innerHTML = playerArray.map((player, index) => {
+                const rankIcon = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`;
+                const winRate = player.totalGames > 0 ? Math.round((player.totalWins / player.totalGames) * 100) : 0;
+                const daysText = getDaysText(player.daysAtCurrentRank || 0);
+                const crownIcon = index === 0 && player.consecutiveWins > 0 ? ' 👑' : '';
+                
+                return `
+                    <div class="leaderboard-item" style="border-left: ${index === 0 ? '3px solid #fbbf24' : 'none'}">
+                        <div class="rank">${rankIcon}</div>
+                        <div class="player-info">
+                            <div class="player-name">${player.name}${crownIcon}</div>
+                            <div class="player-stats">
+                                ${player.totalWins}/${player.totalGames} vitórias (${winRate}%)
+                                ${index < 3 ? `<br/><span style="color: #10b981; font-size: 0.8rem;">🕐 ${daysText}</span>` : ''}
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="streak-value">${player.consecutiveWins}</div>
+                            <div style="font-size: 0.8rem; color: #94a3b8;">Sequência Atual</div>
+                            <div style="font-size: 0.9rem; color: #cbd5e1; margin-top: 0.25rem;">
+                                Melhor: ${player.bestStreak}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function getDaysText(days) {
+            if (days === 0) {
+                return 'Hoje';
+            } else if (days === 1) {
+                return '1 dia nesta posição';
+            } else if (days < 7) {
+                return `${days} dias nesta posição`;
+            } else if (days < 30) {
+                const weeks = Math.floor(days / 7);
+                return weeks === 1 ? '1 semana nesta posição' : `${weeks} semanas nesta posição`;
+            } else {
+                const months = Math.floor(days / 30);
+                return months === 1 ? '1 mês nesta posição' : `${months} meses nesta posição`;
+            }
+        }
+    </script>
+</body>
+</html>
