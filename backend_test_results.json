@@ -1,0 +1,43 @@
+{
+  "timestamp": "2025-09-29T12:32:52.504476",
+  "total_tests": 7,
+  "passed_tests": 6,
+  "success_rate": 85.71428571428571,
+  "test_details": [
+    {
+      "test": "Health Check",
+      "success": true,
+      "details": "Status: 200, Response: {'status': 'healthy', 'timestamp': '2025-09-29T12:32:42.162961+00:00'}"
+    },
+    {
+      "test": "Root Endpoint",
+      "success": true,
+      "details": "Status: 200, Message: Ping Pong Game API is running!"
+    },
+    {
+      "test": "Create Player",
+      "success": false,
+      "details": "HTTPSConnectionPool(host='pingpong-masters-1.preview.emergentagent.com', port=443): Read timed out. (read timeout=10)"
+    },
+    {
+      "test": "Create Game Session",
+      "success": true,
+      "details": "Status: 200, Game ID: 12a7424c-9496-4a48-ab3d-f64e130914a5, Winner: TestPlayer"
+    },
+    {
+      "test": "Get Recent Games",
+      "success": true,
+      "details": "Status: 200, Games count: 3, Latest game winner: TestPlayer"
+    },
+    {
+      "test": "Leaderboard Endpoints",
+      "success": true,
+      "details": "Consecutive wins - Status: 200, Players: 3, Top player: TestPlayer (2 wins) | Best streaks - Status: 200, Players: 3, Top streak: TestPlayer (2 wins)"
+    },
+    {
+      "test": "Multiplayer Game Session",
+      "success": true,
+      "details": "Status: 200, Multiplayer game created, Winner: TestPlayer2"
+    }
+  ]
+}
