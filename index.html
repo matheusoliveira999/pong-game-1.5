@@ -433,25 +433,86 @@
             display: flex !important;
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
+        /* Ultra Responsive Design */
+        @media (max-width: 480px) {
             .menu {
-                padding: 1.5rem;
-                max-width: 90vw;
-                margin: 1rem;
+                padding: 1rem;
+                margin: 0.5rem;
+                max-width: 95vw;
             }
             
             .menu h1 {
-                font-size: 2.5rem;
+                font-size: 1.8rem;
             }
             
             .controls-grid {
                 grid-template-columns: 1fr;
-                gap: 0.75rem;
+                gap: 0.5rem;
             }
             
             .control-item {
-                padding: 0.5rem;
+                padding: 0.4rem;
+                font-size: 0.75rem;
+            }
+            
+            .game-canvas-container {
+                width: auto !important;
+                height: auto !important;
+                max-width: 95vw;
+                padding: 0.3rem;
+            }
+            
+            .mobile-controls {
+                display: flex !important;
+                gap: 1rem;
+                bottom: 0.25rem;
+            }
+            
+            .touch-area {
+                width: 60px;
+                height: 60px;
+                font-size: 0.6rem;
+            }
+            
+            .game-hud {
+                top: 0.25rem;
+                padding: 0.4rem 0.8rem;
+                gap: 0.8rem;
+            }
+            
+            .score .score-value {
+                font-size: 1.2rem;
+            }
+            
+            .game-controls {
+                bottom: 0.25rem;
+                gap: 0.4rem;
+            }
+            
+            .control-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .menu {
+                padding: 1.2rem;
+                max-width: 90vw;
+                margin: 0.8rem;
+            }
+            
+            .menu h1 {
+                font-size: 2.2rem;
+            }
+            
+            .controls-grid {
+                grid-template-columns: 1fr;
+                gap: 0.6rem;
+            }
+            
+            .control-item {
+                padding: 0.6rem;
             }
             
             .control-text {
@@ -462,18 +523,18 @@
                 width: auto !important;
                 height: auto !important;
                 max-width: 90vw;
-                padding: 0.5rem;
+                padding: 0.6rem;
             }
             
             .mobile-controls {
                 display: flex !important;
-                gap: 2rem;
-                bottom: 1rem;
+                gap: 1.5rem;
+                bottom: 0.8rem;
             }
             
             .touch-area {
-                width: 80px;
-                height: 80px;
+                width: 70px;
+                height: 70px;
                 font-size: 0.7rem;
             }
 
@@ -482,40 +543,13 @@
             }
             
             .game-hud {
-                top: 0.5rem;
-                padding: 0.5rem 1rem;
+                top: 0.4rem;
+                padding: 0.6rem 1rem;
                 gap: 1rem;
             }
             
             .score .score-value {
-                font-size: 1.5rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .menu h1 {
-                font-size: 2rem;
-            }
-            
-            .mobile-controls {
-                gap: 1rem;
-                bottom: 0.5rem;
-            }
-            
-            .touch-area {
-                width: 70px;
-                height: 70px;
-                font-size: 0.6rem;
-            }
-            
-            .game-controls {
-                bottom: 0.5rem;
-                gap: 0.5rem;
-            }
-            
-            .control-btn {
-                padding: 0.5rem 1rem;
-                font-size: 0.9rem;
+                font-size: 1.4rem;
             }
         }
 
@@ -738,11 +772,9 @@
         let gameStartTime;
         let animationId;
 
-        // Touch/drag variables
-        let isDragging = false;
-        let dragPaddle = null;
-        let touchStartY = 0;
-        let touchStartPaddleY = 0;
+        // Touch/drag variables - Enhanced multi-touch support
+        let activeTouches = new Map(); // Track multiple touches
+        let touchAreas = { paddle1: null, paddle2: null }; // Expanded touch areas
 
         // Bot adaptive variables
         let rallyCounts = 0;
@@ -816,73 +848,144 @@
                 lastTouchEnd = now;
             }, false);
 
-            // Add touch/mouse events for paddle dragging
+            // Add touch/mouse events for paddle dragging - Enhanced multi-touch
             canvas.addEventListener('mousedown', handleDragStart);
             canvas.addEventListener('mousemove', handleDragMove);
             canvas.addEventListener('mouseup', handleDragEnd);
-            canvas.addEventListener('touchstart', handleDragStart, { passive: false });
-            canvas.addEventListener('touchmove', handleDragMove, { passive: false });
-            canvas.addEventListener('touchend', handleDragEnd);
+            canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+            canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+            canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
         });
         
+        function handleTouchStart(event) {
+            if (gameState !== 'playing') return;
+            event.preventDefault();
+            
+            const rect = canvas.getBoundingClientRect();
+            
+            // Handle multiple touches
+            for (let i = 0; i < event.changedTouches.length; i++) {
+                const touch = event.changedTouches[i];
+                const touchId = touch.identifier;
+                const x = touch.clientX - rect.left;
+                const y = touch.clientY - rect.top;
+                
+                let targetPaddle = null;
+                
+                // Check expanded touch areas
+                if (x >= touchAreas.paddle1.x && x <= touchAreas.paddle1.x + touchAreas.paddle1.width) {
+                    targetPaddle = 'paddle1';
+                } else if (currentMode === 'multiplayer' && 
+                          x >= touchAreas.paddle2.x && x <= touchAreas.paddle2.x + touchAreas.paddle2.width) {
+                    targetPaddle = 'paddle2';
+                }
+                
+                if (targetPaddle) {
+                    activeTouches.set(touchId, {
+                        paddle: targetPaddle,
+                        startY: y,
+                        startPaddleY: targetPaddle === 'paddle1' ? paddle1.y : paddle2.y,
+                        currentY: y
+                    });
+                    
+                    // Visual feedback
+                    canvas.style.cursor = 'grabbing';
+                }
+            }
+        }
+        
+        function handleTouchMove(event) {
+            if (gameState !== 'playing') return;
+            event.preventDefault();
+            
+            const rect = canvas.getBoundingClientRect();
+            
+            // Update all active touches
+            for (let i = 0; i < event.changedTouches.length; i++) {
+                const touch = event.changedTouches[i];
+                const touchId = touch.identifier;
+                const touchData = activeTouches.get(touchId);
+                
+                if (touchData) {
+                    const y = touch.clientY - rect.top;
+                    touchData.currentY = y;
+                    
+                    const deltaY = y - touchData.startY;
+                    const newY = touchData.startPaddleY + deltaY;
+                    
+                    if (touchData.paddle === 'paddle1') {
+                        paddle1.y = Math.max(0, Math.min(canvas.height - paddle1.height, newY));
+                    } else if (touchData.paddle === 'paddle2') {
+                        paddle2.y = Math.max(0, Math.min(canvas.height - paddle2.height, newY));
+                    }
+                }
+            }
+        }
+        
+        function handleTouchEnd(event) {
+            event.preventDefault();
+            
+            // Remove ended touches
+            for (let i = 0; i < event.changedTouches.length; i++) {
+                const touch = event.changedTouches[i];
+                activeTouches.delete(touch.identifier);
+            }
+            
+            // Reset cursor if no active touches
+            if (activeTouches.size === 0) {
+                canvas.style.cursor = 'default';
+            }
+        }
+        
+        // Fallback mouse events for desktop
         function handleDragStart(event) {
             if (gameState !== 'playing') return;
             
-            event.preventDefault();
             const rect = canvas.getBoundingClientRect();
-            const clientX = event.touches ? event.touches[0].clientX : event.clientX;
-            const clientY = event.touches ? event.touches[0].clientY : event.clientY;
-            const x = clientX - rect.left;
-            const y = clientY - rect.top;
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
             
-            // Check if touch/click is on paddle1
-            if (x >= paddle1.x && x <= paddle1.x + paddle1.width &&
-                y >= paddle1.y && y <= paddle1.y + paddle1.height) {
-                isDragging = true;
-                dragPaddle = 'paddle1';
-                touchStartY = y;
-                touchStartPaddleY = paddle1.y;
-                canvas.style.cursor = 'grabbing';
-                return;
+            let targetPaddle = null;
+            
+            // Check expanded touch areas
+            if (x >= touchAreas.paddle1.x && x <= touchAreas.paddle1.x + touchAreas.paddle1.width) {
+                targetPaddle = 'paddle1';
+            } else if (currentMode === 'multiplayer' && 
+                      x >= touchAreas.paddle2.x && x <= touchAreas.paddle2.x + touchAreas.paddle2.width) {
+                targetPaddle = 'paddle2';
             }
             
-            // Check if touch/click is on paddle2 (only in multiplayer mode)
-            if (currentMode === 'multiplayer' && 
-                x >= paddle2.x && x <= paddle2.x + paddle2.width &&
-                y >= paddle2.y && y <= paddle2.y + paddle2.height) {
-                isDragging = true;
-                dragPaddle = 'paddle2';
-                touchStartY = y;
-                touchStartPaddleY = paddle2.y;
+            if (targetPaddle) {
+                activeTouches.set('mouse', {
+                    paddle: targetPaddle,
+                    startY: y,
+                    startPaddleY: targetPaddle === 'paddle1' ? paddle1.y : paddle2.y,
+                    currentY: y
+                });
                 canvas.style.cursor = 'grabbing';
-                return;
             }
         }
         
         function handleDragMove(event) {
-            if (!isDragging || !dragPaddle) return;
+            const touchData = activeTouches.get('mouse');
+            if (!touchData || gameState !== 'playing') return;
             
-            event.preventDefault();
             const rect = canvas.getBoundingClientRect();
-            const clientY = event.touches ? event.touches[0].clientY : event.clientY;
-            const y = clientY - rect.top;
+            const y = event.clientY - rect.top;
             
-            const deltaY = y - touchStartY;
-            const newY = touchStartPaddleY + deltaY;
+            const deltaY = y - touchData.startY;
+            const newY = touchData.startPaddleY + deltaY;
             
-            if (dragPaddle === 'paddle1') {
+            if (touchData.paddle === 'paddle1') {
                 paddle1.y = Math.max(0, Math.min(canvas.height - paddle1.height, newY));
-            } else if (dragPaddle === 'paddle2') {
+            } else if (touchData.paddle === 'paddle2') {
                 paddle2.y = Math.max(0, Math.min(canvas.height - paddle2.height, newY));
             }
         }
         
         function handleDragEnd(event) {
-            if (isDragging) {
-                isDragging = false;
-                dragPaddle = null;
-                canvas.style.cursor = 'default';
-            }
+            activeTouches.delete('mouse');
+            canvas.style.cursor = 'default';
         }
         
         function updateDailyStats() {
@@ -904,44 +1007,102 @@
         }
 
         function resizeCanvas() {
-            const container = document.querySelector('.game-canvas-container');
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
             const isLandscape = viewportWidth > viewportHeight;
             const isMobile = viewportWidth <= 768;
             const isTablet = viewportWidth <= 1024 && viewportWidth > 768;
+            const isSmallMobile = viewportWidth <= 480;
             
             let canvasWidth, canvasHeight;
+            let containerPadding = 20;
             
-            if (isMobile) {
+            // Ultra adaptive sizing based on device characteristics
+            if (isSmallMobile) {
+                // Small phones - maximize usage of available space
+                containerPadding = 10;
                 if (isLandscape) {
-                    // Mobile landscape - use more of the screen
-                    canvasWidth = Math.min(viewportWidth * 0.85, 600);
-                    canvasHeight = Math.min(viewportHeight * 0.5, canvasWidth * 0.6);
+                    canvasWidth = Math.min(viewportWidth * 0.95, 500);
+                    canvasHeight = Math.min(viewportHeight * 0.65, canvasWidth * 0.55);
                 } else {
-                    // Mobile portrait - smaller canvas
-                    canvasWidth = Math.min(viewportWidth * 0.9, 350);
-                    canvasHeight = canvasWidth * 0.6;
+                    canvasWidth = viewportWidth * 0.95;
+                    canvasHeight = Math.min(viewportHeight * 0.4, canvasWidth * 0.65);
+                }
+            } else if (isMobile) {
+                // Regular mobile phones
+                containerPadding = 15;
+                if (isLandscape) {
+                    canvasWidth = Math.min(viewportWidth * 0.9, 650);
+                    canvasHeight = Math.min(viewportHeight * 0.6, canvasWidth * 0.6);
+                } else {
+                    canvasWidth = Math.min(viewportWidth * 0.9, 400);
+                    canvasHeight = Math.min(viewportHeight * 0.45, canvasWidth * 0.7);
                 }
             } else if (isTablet) {
-                // Tablet - medium size
-                canvasWidth = Math.min(viewportWidth * 0.8, 700);
-                canvasHeight = canvasWidth * 0.5;
+                // Tablets - balanced approach
+                containerPadding = 20;
+                if (isLandscape) {
+                    canvasWidth = Math.min(viewportWidth * 0.85, 800);
+                    canvasHeight = Math.min(viewportHeight * 0.7, canvasWidth * 0.5);
+                } else {
+                    canvasWidth = Math.min(viewportWidth * 0.85, 600);
+                    canvasHeight = Math.min(viewportHeight * 0.5, canvasWidth * 0.6);
+                }
             } else {
-                // Desktop - full size but responsive
-                canvasWidth = Math.min(viewportWidth * 0.7, 800);
-                canvasHeight = Math.min(viewportHeight * 0.6, 400);
+                // Desktop - full experience
+                containerPadding = 30;
+                canvasWidth = Math.min(viewportWidth * 0.8, 900);
+                canvasHeight = Math.min(viewportHeight * 0.7, 500);
+                
+                // Ensure 16:10 or 16:9 aspect ratio on desktop
+                const aspectRatio = canvasWidth / canvasHeight;
+                if (aspectRatio > 2.2) {
+                    canvasHeight = canvasWidth / 2;
+                } else if (aspectRatio < 1.6) {
+                    canvasWidth = canvasHeight * 1.8;
+                }
             }
             
+            // Ensure minimum playable size
+            canvasWidth = Math.max(canvasWidth, 280);
+            canvasHeight = Math.max(canvasHeight, 160);
+            
+            // Apply dimensions
             canvas.width = canvasWidth;
             canvas.height = canvasHeight;
             
-            // Update CSS to center the canvas properly
+            // Update container styling
             const gameContainer = document.querySelector('.game-canvas-container');
             if (gameContainer) {
                 gameContainer.style.width = canvasWidth + 'px';
                 gameContainer.style.height = canvasHeight + 'px';
+                gameContainer.style.padding = containerPadding + 'px';
             }
+            
+            // Update expanded touch areas for paddles
+            updateTouchAreas();
+        }
+        
+        function updateTouchAreas() {
+            if (!paddle1 || !paddle2) return;
+            
+            const expandArea = Math.min(canvas.width, canvas.height) * 0.15; // 15% of smaller dimension
+            
+            // Expanded touch area for paddle1 (left side)
+            touchAreas.paddle1 = {
+                x: 0,
+                y: 0,
+                width: paddle1.x + paddle1.width + expandArea,
+                height: canvas.height
+            };
+            
+            // Expanded touch area for paddle2 (right side)
+            touchAreas.paddle2 = {
+                x: paddle2.x - expandArea,
+                y: 0,
+                width: canvas.width - (paddle2.x - expandArea),
+                height: canvas.height
+            };
         }
 
         // Menu functions
@@ -1049,6 +1210,12 @@
             // Reset adaptive difficulty system
             rallyCounts = 0;
             adaptiveDifficultyMultiplier = 1.0;
+            
+            // Update touch areas for enhanced mobile controls
+            updateTouchAreas();
+            
+            // Clear any active touches
+            activeTouches.clear();
         }
 
         function gameLoop() {
@@ -1266,39 +1433,55 @@
             ctx.stroke();
             ctx.setLineDash([]);
 
-            // Draw paddles with interactive indication
+            // Draw expanded touch areas (visual feedback for mobile)
             const isMobileDevice = window.innerWidth <= 768 || 'ontouchstart' in window;
-            
+            if (isMobileDevice && gameState === 'playing' && touchAreas.paddle1) {
+                // Left touch area
+                const leftTouchActive = Array.from(activeTouches.values()).some(t => t.paddle === 'paddle1');
+                ctx.fillStyle = leftTouchActive ? 'rgba(16, 185, 129, 0.15)' : 'rgba(6, 182, 212, 0.1)';
+                ctx.fillRect(touchAreas.paddle1.x, touchAreas.paddle1.y, touchAreas.paddle1.width, touchAreas.paddle1.height);
+                
+                // Right touch area (only in multiplayer)
+                if (currentMode === 'multiplayer' && touchAreas.paddle2) {
+                    const rightTouchActive = Array.from(activeTouches.values()).some(t => t.paddle === 'paddle2');
+                    ctx.fillStyle = rightTouchActive ? 'rgba(16, 185, 129, 0.15)' : 'rgba(6, 182, 212, 0.1)';
+                    ctx.fillRect(touchAreas.paddle2.x, touchAreas.paddle2.y, touchAreas.paddle2.width, touchAreas.paddle2.height);
+                }
+            }
+
+            // Draw paddles with interactive indication
             // Left paddle (always interactive)
+            const paddle1Active = Array.from(activeTouches.values()).some(t => t.paddle === 'paddle1');
             if (isMobileDevice) {
-                ctx.shadowBlur = dragPaddle === 'paddle1' ? 15 : 10;
-                ctx.shadowColor = dragPaddle === 'paddle1' ? '#10b981' : '#06b6d4';
+                ctx.shadowBlur = paddle1Active ? 15 : 10;
+                ctx.shadowColor = paddle1Active ? '#10b981' : '#06b6d4';
             } else {
                 ctx.shadowBlur = 10;
                 ctx.shadowColor = '#06b6d4';
             }
-            ctx.fillStyle = dragPaddle === 'paddle1' ? '#10b981' : '#06b6d4';
+            ctx.fillStyle = paddle1Active ? '#10b981' : '#06b6d4';
             ctx.fillRect(paddle1.x, paddle1.y, paddle1.width, paddle1.height);
             
             // Add touch indicator for paddle1
             if (isMobileDevice && gameState === 'playing') {
                 ctx.shadowBlur = 5;
-                ctx.shadowColor = '#06b6d4';
-                ctx.strokeStyle = 'rgba(6, 182, 212, 0.5)';
-                ctx.lineWidth = 2;
+                ctx.shadowColor = paddle1Active ? '#10b981' : '#06b6d4';
+                ctx.strokeStyle = paddle1Active ? 'rgba(16, 185, 129, 0.8)' : 'rgba(6, 182, 212, 0.5)';
+                ctx.lineWidth = paddle1Active ? 3 : 2;
                 ctx.strokeRect(paddle1.x - 2, paddle1.y - 2, paddle1.width + 4, paddle1.height + 4);
             }
             
             // Right paddle (interactive only in multiplayer)
+            const paddle2Active = Array.from(activeTouches.values()).some(t => t.paddle === 'paddle2');
             const paddle2Interactive = currentMode === 'multiplayer' && isMobileDevice;
             if (paddle2Interactive) {
-                ctx.shadowBlur = dragPaddle === 'paddle2' ? 15 : 10;
-                ctx.shadowColor = dragPaddle === 'paddle2' ? '#10b981' : '#06b6d4';
-                ctx.fillStyle = dragPaddle === 'paddle2' ? '#10b981' : '#06b6d4';
+                ctx.shadowBlur = paddle2Active ? 15 : 10;
+                ctx.shadowColor = paddle2Active ? '#10b981' : '#06b6d4';
+                ctx.fillStyle = paddle2Active ? '#10b981' : '#06b6d4';
                 
                 // Add touch indicator for paddle2
-                ctx.strokeStyle = 'rgba(6, 182, 212, 0.5)';
-                ctx.lineWidth = 2;
+                ctx.strokeStyle = paddle2Active ? 'rgba(16, 185, 129, 0.8)' : 'rgba(6, 182, 212, 0.5)';
+                ctx.lineWidth = paddle2Active ? 3 : 2;
                 ctx.strokeRect(paddle2.x - 2, paddle2.y - 2, paddle2.width + 4, paddle2.height + 4);
             } else {
                 ctx.shadowBlur = 10;
@@ -1318,14 +1501,17 @@
             ctx.fill();
             ctx.shadowBlur = 0;
             
-            // Draw drag hint text (only on first few seconds) and adaptive difficulty indicator
+            // Draw enhanced touch hint text
             if (isMobileDevice && gameState === 'playing') {
                 const gameTime = (Date.now() - gameStartTime) / 1000;
-                if (gameTime < 3) {
-                    ctx.fillStyle = 'rgba(203, 213, 225, 0.8)';
-                    ctx.font = `${12 * Math.min(canvas.width / 800, canvas.height / 400)}px Space Grotesk`;
+                if (gameTime < 4) {
+                    ctx.fillStyle = 'rgba(203, 213, 225, 0.9)';
+                    ctx.font = `${Math.max(10, 14 * Math.min(canvas.width / 800, canvas.height / 400))}px Space Grotesk`;
                     ctx.textAlign = 'center';
-                    ctx.fillText('Arraste as raquetes para mover', canvas.width / 2, canvas.height - 20);
+                    const hintText = currentMode === 'multiplayer' ? 
+                        'Toque nas áreas laterais para mover as raquetes' : 
+                        'Toque na área esquerda para mover sua raquete';
+                    ctx.fillText(hintText, canvas.width / 2, canvas.height - 15);
                 }
             }
             
@@ -1340,7 +1526,7 @@
                 
                 // Rally counter text
                 ctx.fillStyle = 'rgba(239, 68, 68, 0.9)';
-                ctx.font = `${10 * Math.min(canvas.width / 800, canvas.height / 400)}px Space Grotesk`;
+                ctx.font = `${Math.max(8, 12 * Math.min(canvas.width / 800, canvas.height / 400))}px Space Grotesk`;
                 ctx.textAlign = 'center';
                 const rallyText = `🔥 Rally: ${rallyCounts} hits`;
                 ctx.fillText(rallyText, canvas.width * 0.75, canvas.height * 0.15);
