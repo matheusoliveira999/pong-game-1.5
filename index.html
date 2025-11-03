@@ -36,32 +36,48 @@
         /* Menu Styles */
         .menu {
             text-align: center;
-            padding: 2rem;
-            backdrop-filter: blur(20px);
-            background: rgba(15, 23, 42, 0.8);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            max-width: 500px;
+            padding: 3rem 2rem;
+            backdrop-filter: blur(25px);
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.85));
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            max-width: 520px;
             width: 90%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .menu::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.5), transparent);
         }
 
         .menu h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #06b6d4, #3b82f6, #8b5cf6);
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+            text-shadow: 0 0 40px rgba(59, 130, 246, 0.3);
+            letter-spacing: -0.02em;
         }
 
         .menu-subtitle {
-            font-size: 1.2rem;
-            color: #cbd5e1;
-            margin-bottom: 2rem;
-            font-weight: 300;
+            font-size: 1.1rem;
+            color: #94a3b8;
+            margin-bottom: 2.5rem;
+            font-weight: 400;
+            opacity: 0.9;
         }
 
         .menu-section {
@@ -109,53 +125,64 @@
         }
 
         .controls-info {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background: rgba(30, 41, 59, 0.3);
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            text-align: left;
+            margin-top: 2.5rem;
+            padding: 1.8rem;
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.6));
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
         }
 
-        .controls-info h3 {
-            font-size: 1.1rem;
-            color: #e2e8f0;
-            margin-bottom: 1rem;
-            font-weight: 500;
-            text-align: center;
+        .controls-info::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.3), transparent);
         }
 
         .controls-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1rem;
+            gap: 1.2rem;
         }
 
         .control-item {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            background: rgba(15, 23, 42, 0.4);
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            gap: 1rem;
+            padding: 1rem;
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.6), rgba(30, 41, 59, 0.3));
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .control-item:hover {
+            border-color: rgba(59, 130, 246, 0.2);
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.4));
         }
 
         .control-icon {
-            font-size: 1.5rem;
-            width: 2rem;
+            font-size: 1.8rem;
+            width: 2.5rem;
             text-align: center;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
 
         .control-text {
             flex: 1;
-            font-size: 0.85rem;
-            line-height: 1.3;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #cbd5e1;
         }
 
         .control-text strong {
             color: #06b6d4;
             font-weight: 600;
+            font-size: 1rem;
         }
 
         .input-group {
@@ -289,39 +316,7 @@
             border-color: #3b82f6;
         }
 
-        /* Mobile Controls */
-        .mobile-controls {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: none;
-            gap: 4rem;
-            opacity: 0.8;
-        }
-
-        .touch-area {
-            width: 120px;
-            height: 120px;
-            background: rgba(59, 130, 246, 0.2);
-            border: 2px solid rgba(59, 130, 246, 0.5);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #3b82f6;
-            font-size: 0.9rem;
-            font-weight: 500;
-            text-align: center;
-            user-select: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .touch-area:active {
-            background: rgba(59, 130, 246, 0.4);
-            transform: scale(0.95);
-        }
+        /* Game controls - Simplified */
 
         /* Leaderboard Styles */
         .leaderboard {
@@ -442,100 +437,76 @@
             }
             
             .menu h1 {
-                font-size: 1.8rem;
+                font-size: 2.2rem;
             }
             
             .controls-grid {
                 grid-template-columns: 1fr;
-                gap: 0.5rem;
+                gap: 0.8rem;
             }
             
             .control-item {
-                padding: 0.4rem;
-                font-size: 0.75rem;
+                padding: 0.8rem;
+                font-size: 0.8rem;
             }
             
             .game-canvas-container {
                 width: auto !important;
                 height: auto !important;
                 max-width: 95vw;
-                padding: 0.3rem;
-            }
-            
-            .mobile-controls {
-                display: flex !important;
-                gap: 1rem;
-                bottom: 0.25rem;
-            }
-            
-            .touch-area {
-                width: 60px;
-                height: 60px;
-                font-size: 0.6rem;
+                padding: 0.4rem;
             }
             
             .game-hud {
-                top: 0.25rem;
-                padding: 0.4rem 0.8rem;
-                gap: 0.8rem;
+                top: 0.3rem;
+                padding: 0.5rem 1rem;
+                gap: 1rem;
             }
             
             .score .score-value {
-                font-size: 1.2rem;
+                font-size: 1.3rem;
             }
             
             .game-controls {
-                bottom: 0.25rem;
-                gap: 0.4rem;
+                bottom: 0.5rem;
+                gap: 0.6rem;
             }
             
             .control-btn {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.8rem;
+                padding: 0.6rem 1rem;
+                font-size: 0.85rem;
             }
         }
 
         @media (max-width: 768px) {
             .menu {
-                padding: 1.2rem;
-                max-width: 90vw;
-                margin: 0.8rem;
+                padding: 1.5rem;
+                max-width: 92vw;
+                margin: 1rem;
             }
             
             .menu h1 {
-                font-size: 2.2rem;
+                font-size: 2.8rem;
             }
             
             .controls-grid {
                 grid-template-columns: 1fr;
-                gap: 0.6rem;
+                gap: 1rem;
             }
             
             .control-item {
-                padding: 0.6rem;
+                padding: 1rem;
             }
             
             .control-text {
-                font-size: 0.8rem;
+                font-size: 0.85rem;
             }
             
             .game-canvas-container {
                 width: auto !important;
                 height: auto !important;
-                max-width: 90vw;
-                padding: 0.6rem;
-            }
-            
-            .mobile-controls {
-                display: flex !important;
-                gap: 1.5rem;
-                bottom: 0.8rem;
-            }
-            
-            .touch-area {
-                width: 70px;
-                height: 70px;
-                font-size: 0.7rem;
+                max-width: 92vw;
+                padding: 0.8rem;
             }
 
             .mode-selector {
@@ -543,13 +514,13 @@
             }
             
             .game-hud {
-                top: 0.4rem;
-                padding: 0.6rem 1rem;
-                gap: 1rem;
+                top: 0.6rem;
+                padding: 0.8rem 1.2rem;
+                gap: 1.2rem;
             }
             
             .score .score-value {
-                font-size: 1.4rem;
+                font-size: 1.6rem;
             }
         }
 
@@ -653,32 +624,30 @@
                 </div>
             </div>
 
-            <div class="menu-buttons">
-                <button class="menu-btn" onclick="startGame()">Iniciar Jogo</button>
-                <button class="menu-btn secondary" onclick="showLeaderboard()">Ver Ranking</button>
-            </div>
-            
-            <!-- Controles Section -->
+            <!-- Controles Section - Refined -->
             <div class="controls-info">
-                <h3>Controles</h3>
                 <div class="controls-grid">
                     <div class="control-item">
                         <div class="control-icon">⌨️</div>
                         <div class="control-text">
-                            <strong>Teclado</strong><br>
-                            Jogador 1: W/S ou ↑/↓<br>
-                            <span id="player2Controls">Jogador 2: I/K</span>
+                            <strong>Desktop</strong><br>
+                            <span id="keyboardControls">Jogador 1: ↑↓ ou W/S</span>
                         </div>
                     </div>
                     <div class="control-item">
                         <div class="control-icon">📱</div>
                         <div class="control-text">
-                            <strong>Touch/Mobile</strong><br>
-                            Arraste as raquetes<br>
-                            ou use botões virtuais
+                            <strong>Mobile</strong><br>
+                            Arraste as raquetes diretamente
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Action buttons - Refined positioning -->
+            <div class="menu-buttons">
+                <button class="menu-btn" onclick="startGame()">🎮 Jogar</button>
+                <button class="menu-btn secondary" onclick="showLeaderboard()">🏆 Ranking</button>
             </div>
         </div>
 
@@ -705,29 +674,10 @@
                 <button class="control-btn" onclick="backToMenu()">Voltar ao Menu</button>
             </div>
 
-            <!-- Mobile Controls -->
-            <div class="mobile-controls">
-                <div class="player-controls">
-                    <div class="touch-area" onmousedown="handleTouch(1, 'up', true)" onmouseup="handleTouch(1, 'up', false)" ontouchstart="handleTouch(1, 'up', true)" ontouchend="handleTouch(1, 'up', false)">
-                        Jogador 1<br>CIMA
-                    </div>
-                    <div class="touch-area" onmousedown="handleTouch(1, 'down', true)" onmouseup="handleTouch(1, 'down', false)" ontouchstart="handleTouch(1, 'down', true)" ontouchend="handleTouch(1, 'down', false)">
-                        Jogador 1<br>BAIXO
-                    </div>
-                </div>
-                <div class="player-controls" id="player2Controls" style="display: none;">
-                    <div class="touch-area" onmousedown="handleTouch(2, 'up', true)" onmouseup="handleTouch(2, 'up', false)" ontouchstart="handleTouch(2, 'up', true)" ontouchend="handleTouch(2, 'up', false)">
-                        Jogador 2<br>CIMA
-                    </div>
-                    <div class="touch-area" onmousedown="handleTouch(2, 'down', true)" onmouseup="handleTouch(2, 'down', false)" ontouchstart="handleTouch(2, 'down', true)" ontouchend="handleTouch(2, 'down', false)">
-                        Jogador 2<br>BAIXO
-                    </div>
-                </div>
-            </div>
+            <!-- Mobile Controls - Removed for cleaner interface -->
+            <!-- Touch drag is now the primary mobile control method -->
 
-            <div style="position: absolute; bottom: 0.5rem; left: 50%; transform: translateX(-50%); font-size: 0.8rem; color: #64748b; text-align: center;">
-                <span id="gameInstructions">Jogador 1: W/S ou ↑/↓ | Jogador 2: I/K</span>
-            </div>
+            <!-- Clean game interface without bottom instructions -->
         </div>
 
         <!-- Leaderboard -->
@@ -1113,17 +1063,16 @@
             
             const player2Group = document.getElementById('player2Group');
             const botDifficultyGroup = document.getElementById('botDifficultyGroup');
-            const player2ControlsText = document.getElementById('player2Controls');
+            const keyboardControls = document.getElementById('keyboardControls');
             
             if (mode === 'multiplayer') {
                 player2Group.style.display = 'block';
                 botDifficultyGroup.style.display = 'none';
-                player2ControlsText.style.display = 'block';
-                player2ControlsText.textContent = 'Jogador 2: I/K';
+                keyboardControls.textContent = 'Jogador 1: ↑↓ | Jogador 2: I/K';
             } else {
                 player2Group.style.display = 'none';
                 botDifficultyGroup.style.display = 'block';
-                player2ControlsText.style.display = 'none';
+                keyboardControls.textContent = 'Jogador 1: ↑↓ ou W/S';
             }
         }
 
@@ -1146,19 +1095,8 @@
                 player2Controls.style.display = 'none';
             }
             
-            // Update mobile controls visibility
-            const mobileControls = document.querySelector('.mobile-controls');
-            if (isMobileDevice) {
-                mobileControls.style.display = 'flex';
-                // Update touch area labels
-                const touchAreas = mobileControls.querySelectorAll('.touch-area');
-                touchAreas[0].innerHTML = `${gameSettings.player1Name}<br>CIMA`;
-                touchAreas[1].innerHTML = `${gameSettings.player1Name}<br>BAIXO`;
-                if (currentMode === 'multiplayer' && touchAreas.length >= 4) {
-                    touchAreas[2].innerHTML = `${gameSettings.player2Name}<br>CIMA`;
-                    touchAreas[3].innerHTML = `${gameSettings.player2Name}<br>BAIXO`;
-                }
-            }
+            // Update mobile controls visibility - Simplified (no virtual buttons)
+            const isMobileDevice = window.innerWidth <= 768 || 'ontouchstart' in window;
             
             // Update instructions
             const instructions = currentMode === 'multiplayer' 
@@ -1433,19 +1371,24 @@
             ctx.stroke();
             ctx.setLineDash([]);
 
-            // Draw expanded touch areas (visual feedback for mobile)
+            // Subtle touch areas for mobile (less intrusive)
             const isMobileDevice = window.innerWidth <= 768 || 'ontouchstart' in window;
             if (isMobileDevice && gameState === 'playing' && touchAreas.paddle1) {
-                // Left touch area
-                const leftTouchActive = Array.from(activeTouches.values()).some(t => t.paddle === 'paddle1');
-                ctx.fillStyle = leftTouchActive ? 'rgba(16, 185, 129, 0.15)' : 'rgba(6, 182, 212, 0.1)';
-                ctx.fillRect(touchAreas.paddle1.x, touchAreas.paddle1.y, touchAreas.paddle1.width, touchAreas.paddle1.height);
+                const gameTime = (Date.now() - gameStartTime) / 1000;
+                const showAreas = gameTime < 3; // Show for first 3 seconds only
                 
-                // Right touch area (only in multiplayer)
-                if (currentMode === 'multiplayer' && touchAreas.paddle2) {
-                    const rightTouchActive = Array.from(activeTouches.values()).some(t => t.paddle === 'paddle2');
-                    ctx.fillStyle = rightTouchActive ? 'rgba(16, 185, 129, 0.15)' : 'rgba(6, 182, 212, 0.1)';
-                    ctx.fillRect(touchAreas.paddle2.x, touchAreas.paddle2.y, touchAreas.paddle2.width, touchAreas.paddle2.height);
+                if (showAreas) {
+                    // Left touch area
+                    const leftTouchActive = Array.from(activeTouches.values()).some(t => t.paddle === 'paddle1');
+                    ctx.fillStyle = leftTouchActive ? 'rgba(16, 185, 129, 0.08)' : 'rgba(6, 182, 212, 0.04)';
+                    ctx.fillRect(touchAreas.paddle1.x, touchAreas.paddle1.y, touchAreas.paddle1.width, touchAreas.paddle1.height);
+                    
+                    // Right touch area (only in multiplayer)
+                    if (currentMode === 'multiplayer' && touchAreas.paddle2) {
+                        const rightTouchActive = Array.from(activeTouches.values()).some(t => t.paddle === 'paddle2');
+                        ctx.fillStyle = rightTouchActive ? 'rgba(16, 185, 129, 0.08)' : 'rgba(6, 182, 212, 0.04)';
+                        ctx.fillRect(touchAreas.paddle2.x, touchAreas.paddle2.y, touchAreas.paddle2.width, touchAreas.paddle2.height);
+                    }
                 }
             }
 
@@ -1501,35 +1444,31 @@
             ctx.fill();
             ctx.shadowBlur = 0;
             
-            // Draw enhanced touch hint text
+            // Minimal touch hint for mobile
             if (isMobileDevice && gameState === 'playing') {
                 const gameTime = (Date.now() - gameStartTime) / 1000;
-                if (gameTime < 4) {
-                    ctx.fillStyle = 'rgba(203, 213, 225, 0.9)';
-                    ctx.font = `${Math.max(10, 14 * Math.min(canvas.width / 800, canvas.height / 400))}px Space Grotesk`;
+                if (gameTime < 2) {
+                    ctx.fillStyle = 'rgba(203, 213, 225, 0.7)';
+                    ctx.font = `${Math.max(9, 11 * Math.min(canvas.width / 800, canvas.height / 400))}px Space Grotesk`;
                     ctx.textAlign = 'center';
-                    const hintText = currentMode === 'multiplayer' ? 
-                        'Toque nas áreas laterais para mover as raquetes' : 
-                        'Toque na área esquerda para mover sua raquete';
-                    ctx.fillText(hintText, canvas.width / 2, canvas.height - 15);
+                    ctx.fillText('Arraste para mover', canvas.width / 2, canvas.height - 12);
                 }
             }
             
-            // Show adaptive difficulty indicator for bot
-            if (currentMode === 'single_player' && adaptiveDifficultyMultiplier > 1.0) {
-                const intensity = Math.min((adaptiveDifficultyMultiplier - 1) * 2, 1); // 0 to 1
-                ctx.fillStyle = `rgba(239, 68, 68, ${0.3 + intensity * 0.4})`; // Red glow gets stronger
-                ctx.shadowBlur = 15;
+            // Subtle adaptive difficulty indicator
+            if (currentMode === 'single_player' && adaptiveDifficultyMultiplier > 1.0 && rallyCounts > 8) {
+                const intensity = Math.min((adaptiveDifficultyMultiplier - 1) * 1.5, 1);
+                ctx.fillStyle = `rgba(239, 68, 68, ${0.2 + intensity * 0.3})`;
+                ctx.shadowBlur = 8;
                 ctx.shadowColor = '#ef4444';
                 ctx.fillRect(paddle2.x, paddle2.y, paddle2.width, paddle2.height);
                 ctx.shadowBlur = 0;
                 
-                // Rally counter text
-                ctx.fillStyle = 'rgba(239, 68, 68, 0.9)';
-                ctx.font = `${Math.max(8, 12 * Math.min(canvas.width / 800, canvas.height / 400))}px Space Grotesk`;
-                ctx.textAlign = 'center';
-                const rallyText = `🔥 Rally: ${rallyCounts} hits`;
-                ctx.fillText(rallyText, canvas.width * 0.75, canvas.height * 0.15);
+                // Minimal rally indicator
+                ctx.fillStyle = 'rgba(239, 68, 68, 0.7)';
+                ctx.font = `${Math.max(8, 10 * Math.min(canvas.width / 800, canvas.height / 400))}px Space Grotesk`;
+                ctx.textAlign = 'right';
+                ctx.fillText(`🔥 ${rallyCounts}`, canvas.width - 15, 25);
             }
         }
 
@@ -1593,12 +1532,8 @@
             gameState = 'menu';
         }
 
-        // Touch controls
-        function handleTouch(player, direction, pressed) {
-            event.preventDefault();
-            const key = player === 1 ? (direction === 'up' ? 'w' : 's') : (direction === 'up' ? 'i' : 'k');
-            keys[key] = pressed;
-        }
+        // Touch controls - Removed legacy button-based touch system
+        // Now using direct drag on paddles only
 
         // Screen management
         function showScreen(screenId) {
